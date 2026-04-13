@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { generateSessionId } from '../utils/session';
+import { DEMO_USERNAME, DEMO_PASSWORD } from '../config/auth';
 
 interface Session {
   username: string;
@@ -13,16 +14,13 @@ interface AuthContextData {
   logout: () => void;
 }
 
-const FIXED_USERNAME = 'admin';
-const FIXED_PASSWORD = '1234';
-
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
 
   function login(username: string, password: string): boolean {
-    if (username === FIXED_USERNAME && password === FIXED_PASSWORD) {
+    if (username === DEMO_USERNAME && password === DEMO_PASSWORD) {
       setSession({
         username,
         sessionId: generateSessionId(),
