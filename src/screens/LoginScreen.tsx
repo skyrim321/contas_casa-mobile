@@ -7,6 +7,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 
@@ -15,10 +16,12 @@ export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { width } = useWindowDimensions();
+  const isWide = Platform.OS === 'web' && width >= 600;
 
-  function handleLogin() {
+  async function handleLogin() {
     setError('');
-    const success = login(username.trim(), password);
+    const success = await login(username.trim(), password);
     if (!success) {
       setError('Usuário ou senha inválidos.');
     }
@@ -29,6 +32,7 @@ export default function LoginScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
+      <View style={[styles.inner, isWide && styles.innerWide]}>
       <Text style={styles.title}>Contas da Casa</Text>
       <Text style={styles.subtitle}>Faça seu login</Text>
 
@@ -53,6 +57,7 @@ export default function LoginScreen() {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -64,6 +69,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
+  },
+  inner: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  innerWide: {
+    maxWidth: 460,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 40,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
   },
   title: {
     fontSize: 28,

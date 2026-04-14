@@ -1,16 +1,10 @@
 import React, { createContext, useContext, useState } from 'react';
-import { generateSessionId } from '../utils/session';
-import { DEMO_USERNAME, DEMO_PASSWORD } from '../config/auth';
-
-interface Session {
-  username: string;
-  sessionId: string;
-  loginAt: Date;
-}
+import { Session } from '../types';
+import { AuthService } from '../services/authService';
 
 interface AuthContextData {
   session: Session | null;
-  login: (username: string, password: string) => boolean;
+  login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -27,16 +21,18 @@ export function useAuth(): AuthContextData {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
 
-  function login(username: string, password: string): boolean {
-    if (username === DEMO_USERNAME && password === DEMO_PASSWORD) {
+  async function login(username: string, password: string): Promise<boolean> {
+    try {
+      const response = await AuthService.login({ username, password });
       setSession({
-        username,
-        sessionId: generateSessionId(),
+        token: response.data.token,
+        user: response.data.user,
         loginAt: new Date(),
       });
       return true;
+    } catch {
+      return false;
     }
-    return false;
   }
 
   function logout() {
